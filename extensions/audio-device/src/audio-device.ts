@@ -159,7 +159,7 @@ export async function createAggregateDevice(
   otherDeviceIds?: string[],
   options?: { multiOutput?: boolean },
 ): Promise<AudioDevice> {
-  return parseStdout(
+  return parseStdout<AudioDevice>(
     await runAudioDevices(
       [
         "aggregate",
