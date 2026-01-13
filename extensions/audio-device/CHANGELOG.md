@@ -3,7 +3,6 @@
 ## [Update] - {PR_MERGE_DATE}
 
 - Added auto-switch commands with device order customization
-- Added configurable auto-switch interval preference
 
 ## [Fix] - 2025-09-11
 

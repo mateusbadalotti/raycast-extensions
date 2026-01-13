@@ -5,6 +5,7 @@ import type { AudioDevice } from "./audio-device";
 import { getInputDevices, getOutputDevices } from "./audio-device";
 import { applyAutoSwitchIfEnabled } from "./auto-switcher";
 import { getTransportTypeLabel } from "./device-labels";
+import { getIcon } from "./helpers";
 import {
   applyDeviceOrder,
   getDeviceOrder,
@@ -132,6 +133,7 @@ export default function Command() {
           <List.Item
             key={device.uid}
             title={device.name}
+            icon={getIcon(device, false)}
             accessories={[{ text: getTransportTypeLabel(device) }]}
             actions={
               <ActionPanel>
@@ -163,6 +165,7 @@ export default function Command() {
             <List.Item
               key={device.uid}
               title={device.name}
+              icon={getIcon(device, false)}
               subtitle="Disabled"
               actions={
                 <ActionPanel>
