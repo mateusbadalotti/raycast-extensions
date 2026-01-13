@@ -2,7 +2,7 @@
 
 ## [Update] - {PR_MERGE_DATE}
 
-- Added auto-switch commands with device order customization
+- Added auto-switch commands with device order customization and toggles
 
 ## [Fix] - 2025-09-11
 
