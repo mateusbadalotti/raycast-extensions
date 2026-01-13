@@ -3,11 +3,9 @@ import {
   ActionPanel,
   Color,
   closeMainWindow,
-  getPreferenceValues,
   Icon,
   Keyboard,
   List,
-  LocalStorage,
   popToRoot,
   showHUD,
   showToast,
@@ -22,10 +20,16 @@ import {
   getInputDevices,
   getOutputDevices,
   setDefaultInputDevice,
-  setDefaultOutputDevice,
-  setDefaultSystemDevice,
   TransportType,
 } from "./audio-device";
+import { setOutputAndSystemDevice } from "./device-actions";
+import {
+  getHiddenDevices,
+  isShowingHiddenDevices,
+  setShowHiddenDevices,
+  toggleDeviceVisibility,
+} from "./device-preferences";
+import { getTransportTypeLabel } from "./device-labels";
 import { createDeepLink } from "./utils";
 
 type IOType = "input" | "output";
@@ -97,7 +101,7 @@ export function DeviceList({ ioType, deviceId, deviceName }: DeviceListProps) {
             <List.Item
               key={d.uid}
               title={d.name}
-              subtitle={getSubtitle(d)}
+              subtitle={getTransportTypeLabel(d)}
               icon={getIcon(d, d.uid === data.current.uid)}
               actions={
                 <ActionPanel>
@@ -116,7 +120,7 @@ export function DeviceList({ ioType, deviceId, deviceName }: DeviceListProps) {
               <List.Item
                 key={d.uid}
                 title={d.name}
-                subtitle={getSubtitle(d)}
+                subtitle={getTransportTypeLabel(d)}
                 icon={getIcon(d, false)}
                 actions={
                   <ActionPanel>
@@ -210,14 +214,6 @@ function SetAudioDeviceAction({ device, type, onSelection }: SetAudioDeviceActio
   );
 }
 
-async function setOutputAndSystemDevice(deviceId: string) {
-  const { systemOutput } = getPreferenceValues();
-  await setDefaultOutputDevice(deviceId);
-  if (systemOutput) {
-    await setDefaultSystemDevice(deviceId);
-  }
-}
-
 function ToggleDeviceVisibilityAction({ deviceId, onAction }: { deviceId: string; onAction: () => void }) {
   const { data: isHidden, revalidate: refetchIsHidden } = usePromise(async () => {
     const hiddenDevices = await getHiddenDevices();
@@ -239,40 +235,19 @@ function ToggleDeviceVisibilityAction({ deviceId, onAction }: { deviceId: string
 }
 
 function ToggleShowHiddenDevicesAction({ onAction }: { onAction: () => void }) {
-  const { data: showHidden, revalidate: refetchShowHidden } = usePromise(async () => {
-    return (await LocalStorage.getItem("showHiddenDevices")) === "true";
-  }, []);
+  const { data: showHidden, revalidate: refetchShowHidden } = usePromise(isShowingHiddenDevices, []);
 
   return (
     <Action
       title={showHidden ? "Hide Hidden Devices" : "Show Hidden Devices"}
       icon={showHidden ? Icon.EyeDisabled : Icon.Eye}
       onAction={async () => {
-        await LocalStorage.setItem("showHiddenDevices", showHidden ? "false" : "true");
+        await setShowHiddenDevices(!showHidden);
         refetchShowHidden();
         onAction();
       }}
     />
   );
-}
-
-async function toggleDeviceVisibility(deviceId: string) {
-  const hiddenDevices = JSON.parse((await LocalStorage.getItem("hiddenDevices")) || "[]");
-  const index = hiddenDevices.indexOf(deviceId);
-  if (index === -1) {
-    hiddenDevices.push(deviceId);
-  } else {
-    hiddenDevices.splice(index, 1);
-  }
-  await LocalStorage.setItem("hiddenDevices", JSON.stringify(hiddenDevices));
-}
-
-async function getHiddenDevices() {
-  return JSON.parse((await LocalStorage.getItem("hiddenDevices")) || "[]");
-}
-
-async function isShowingHiddenDevices() {
-  return (await LocalStorage.getItem("showHiddenDevices")) === "true";
 }
 
 function getDeviceIcon(device: AudioDevice): string | null {
@@ -323,8 +298,4 @@ function getAccessories(isCurrent: boolean) {
       icon: isCurrent ? Icon.Checkmark : undefined,
     },
   ];
-}
-
-function getSubtitle(device: AudioDevice) {
-  return Object.entries(TransportType).find(([, v]) => v === device.transportType)?.[0];
 }
