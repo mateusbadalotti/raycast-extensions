@@ -192,14 +192,6 @@
       "default": false
     },
     {
-      "name": "autoSwitchIntervalSeconds",
-      "required": false,
-      "title": "Auto-Switch Interval (seconds)",
-      "description": "How often to auto-switch when enabled.",
-      "type": "textfield",
-      "default": "20"
-    },
-    {
       "name": "favourite",
       "required": false,
       "title": "Favourite Output Device",

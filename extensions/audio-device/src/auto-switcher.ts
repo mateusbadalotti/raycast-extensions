@@ -1,13 +1,4 @@
-import {
-  LaunchType,
-  LocalStorage,
-  environment,
-  getPreferenceValues,
-  showHUD,
-  showToast,
-  Toast,
-  updateCommandMetadata,
-} from "@raycast/api";
+import { LaunchType, LocalStorage, environment, showHUD, showToast, Toast, updateCommandMetadata } from "@raycast/api";
 import {
   getDefaultInputDevice,
   getDefaultOutputDevice,
@@ -21,7 +12,7 @@ import { applyDeviceOrder, getDeviceOrder, getDisabledDevices } from "./device-p
 
 type IOType = "input" | "output";
 
-const DEFAULT_AUTO_SWITCH_INTERVAL_SECONDS = 20;
+const AUTO_SWITCH_INTERVAL_SECONDS = 20;
 const MS_PER_SECOND = 1000;
 
 const AUTO_SWITCH_LAST_RUN_KEYS = {
@@ -29,18 +20,11 @@ const AUTO_SWITCH_LAST_RUN_KEYS = {
   output: "autoSwitchLastRunOutput",
 } as const;
 
-function getAutoSwitchIntervalSeconds() {
-  const { autoSwitchIntervalSeconds } = getPreferenceValues<{ autoSwitchIntervalSeconds?: string }>();
-  const parsed = Number(autoSwitchIntervalSeconds);
-  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_AUTO_SWITCH_INTERVAL_SECONDS;
-  return parsed;
-}
-
 async function shouldSkipForInterval(type: IOType) {
   const lastRunRaw = await LocalStorage.getItem<string>(AUTO_SWITCH_LAST_RUN_KEYS[type]);
   const lastRun = lastRunRaw ? Number(lastRunRaw) : undefined;
   if (!lastRun || !Number.isFinite(lastRun)) return false;
-  const intervalMs = getAutoSwitchIntervalSeconds() * MS_PER_SECOND;
+  const intervalMs = AUTO_SWITCH_INTERVAL_SECONDS * MS_PER_SECOND;
   return Date.now() - lastRun < intervalMs;
 }
 
