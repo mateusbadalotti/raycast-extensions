@@ -61,7 +61,7 @@ export async function getVideoTranscript(video: string): Promise<string | undefi
     }
 
     const playerData = (await playerResponse.json()) as PlayerResponse;
-    
+
     const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
 
     if (!captionTracks || captionTracks.length === 0) {
