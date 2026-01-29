@@ -1,5 +1,15 @@
 # Summarize YouTube Video Changelog
 
+## [Fix] - {PR_MERGE_DATE}
+
+- Fix transcript XML parsing for YouTube's srv3 format (extract text from `<s>` segments)
+- Remove deprecated "Summarize YouTube Video" command
+
+## [Fix] - 2026-01-27
+
+- 🔧 Fix transcript fetching using ANDROID client API
+- ⬆️ Upgraded dependencies
+
 ## [Feat] - 2025-10-28
 
 - 🖼️ Added Support for Windows
